@@ -1,0 +1,4 @@
+.centered-pane {
+    -fx-display: inline-block;
+    -fx-margin: auto;
+}
