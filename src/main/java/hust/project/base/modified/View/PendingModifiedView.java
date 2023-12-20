@@ -1,157 +1,124 @@
 package hust.project.base.modified.View;
-import hust.project.base.employee_subsystem.IHRService;
-import hust.project.base.modified.Model.ModifiedDTO;
-import hust.project.base.modified.Model.ModifiedRepository;
+
+import hust.project.base.modified.Controller.ModifiedController;
+import hust.project.base.modified.Model.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.util.Callback;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import static hust.project.base.constants.MetricsConstants.MAIN_WIDTH;
-public class PendingModifiedView extends VBox  {
 
-    private IHRService hrService;
-    private static ModifiedRepository modifiedRepository;
+public class PendingModifiedView extends VBox {
+    private TableView<ModifiedDTO> requestTable;
 
     private static PendingModifiedView ins;
 
-    private TableView<ModifiedDTO> requestTable;
-    public static PendingModifiedView instance(){
+    public static PendingModifiedView instance() {
         if(ins == null){
-            ins = new PendingModifiedView(modifiedRepository);
+            ins = new PendingModifiedView ();
         }
         return ins;
     }
 
-    public  PendingModifiedView(ModifiedRepository repo){
-        this.modifiedRepository = repo;
+    public PendingModifiedView() {
+        initializeComponents();
+    }
+    private void initializeComponents() {
         setSpacing(20);
         setPrefWidth(MAIN_WIDTH * 0.7);
         setMaxWidth(MAIN_WIDTH * 0.84);
         Label label = new Label("Danh sách các yêu cầu đang chờ");
         label.setStyle("-fx-font-size: 20px;");
-        getChildren().addAll(label, createRequestTable());
-    }
-    private TableView<ModifiedDTO> createRequestTable() {
-        TableView<ModifiedDTO> requestTable = new TableView<>();
+        requestTable = createRequestTable();
+        getChildren().addAll(label, requestTable);
 
-        if (modifiedRepository == null) {
-            System.out.println("modifiedRepository is null!");
-            return null;
+    }
+
+    private TableView<ModifiedDTO> createRequestTable() {
+        TableView<ModifiedDTO> table = new TableView<>();
+        table.setEditable(true);
+        TableColumn<ModifiedDTO, Number> sttCol = new TableColumn<>("STT");
+        sttCol.setMinWidth(35);
+        sttCol.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(column.getValue()) + 1));
+        sttCol.setSortable(false);
+        table.getColumns().addAll(
+                sttCol,
+                createColumn("Nhân viên", "employeeId", String.class),
+                createColumn("Ngày checkin", "date", String.class),
+                createColumn("Giờ checkin", "time", String.class),
+                createColumn("Giờ duyệt", "timeModified", String.class, 100),
+                createColumn("Ngày duyệt", "dateModified", String.class, 100),
+                createColumn("Ghi chú", "requestReason", String.class, 200),
+                createStatusColumn()
+
+        );
+        table.setPrefHeight(25 * 18);
+        return table;
+    }
+
+    private <T> TableColumn<ModifiedDTO, T> createColumn(String title, String property, Class<T> type, double... maxWidth) {
+        TableColumn<ModifiedDTO, T> column = new TableColumn<>(title);
+        column.setCellValueFactory(new PropertyValueFactory<>(property));
+        if (maxWidth.length > 0) {
+            column.setMaxWidth(maxWidth[0]);
         }
-        List<ModifiedDTO> modifiedDTOList = modifiedRepository.getAllModifiedDTO();
-        requestTable.setItems(FXCollections.observableArrayList(modifiedDTOList));
-//        requestTable.setEditable(true);
-        requestTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue!= null) {
-                System.out.println(newValue.toString());
+        return column;
+    }
+
+    private TableColumn<ModifiedDTO, String> createStatusColumn() {
+        TableColumn<ModifiedDTO, String> statusCol = new TableColumn<>("Trạng thái");
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("requestStatus"));
+        statusCol.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                if (item != null) {
+                    setStyle("-fx-text-fill: " + switch (item) {
+                        case "Accepted" -> "green";
+                        case "Rejected" -> "red";
+                        case "Pending" -> "orange";
+                        default -> "black";
+                    } + ";");
+                }
             }
         });
-        TableColumn<ModifiedDTO, Number> sttCol = new TableColumn<>("STT");
-        sttCol.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(requestTable.getItems().indexOf(column.getValue()) + 1));
-
-        TableColumn<ModifiedDTO, String> employeeIdCol = new TableColumn<>("Nhân viên");
-        employeeIdCol.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
-
-        TableColumn<ModifiedDTO, String> dateCol = new TableColumn<>("Ngày checkin");
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        TableColumn<ModifiedDTO, String> timeCol = new TableColumn<>("Giờ checkin");
-        timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
-
-        TableColumn<ModifiedDTO, String> timeModifiedCol = new TableColumn<>("Giờ duyệt");
-        timeModifiedCol.setCellValueFactory(new PropertyValueFactory<>("timeModified"));
-        timeModifiedCol.setMaxWidth (100);
-
-        TableColumn<ModifiedDTO, String> dateModifiedCol = new TableColumn<>("Ngày duyệt");
-        dateModifiedCol.setCellValueFactory(new PropertyValueFactory<>("dateModified"));
-        dateModifiedCol.setMaxWidth (100);
-
-        TableColumn<ModifiedDTO, String> requestReasonCol = new TableColumn<>("Ghi chú");
-        requestReasonCol.setCellValueFactory(new PropertyValueFactory<>("requestReason"));
-        requestReasonCol.setMaxWidth(200);
-
-        TableColumn<ModifiedDTO, String> requestStatusCol = new TableColumn<>("Trạng thái");
-        requestStatusCol.setCellValueFactory(new PropertyValueFactory<>("requestStatus"));
-        requestStatusCol.setCellFactory(column -> {
-            return new TableCell<ModifiedDTO, String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-
-                        if (item.equals("Accepted")) {
-                            setStyle("-fx-text-fill: green;");
-                        } else if (item.equals("Rejected")) {
-                            setStyle("-fx-text-fill: red;");
-                        } else if (item.equals("Pending")) {
-                            setStyle("-fx-text-fill: orange;"); // Using orange for better visibility instead of yellow
-                        } else {
-                            setStyle("");
-                        }
-                    }
-                }
-            };
-        });
-
-        TableColumn<ModifiedDTO, Void> actionCol = new TableColumn<>("Hành động");
-        // Assume cellFactory is defined elsewhere
-        actionCol.setCellFactory(cellFactory);
-        requestTable.getColumns().addAll(sttCol, employeeIdCol, timeCol,dateCol,requestReasonCol, requestStatusCol, timeModifiedCol, dateModifiedCol,  actionCol);
-        requestTable.setPrefHeight(25 * 18);
-        requestTable.setItems(FXCollections.observableArrayList(modifiedDTOList));
-        return requestTable;
+        return statusCol;
     }
-        Callback<TableColumn<ModifiedDTO, Void>, TableCell<ModifiedDTO, Void>> cellFactory = new Callback<>() {
-        @Override
-        public TableCell<ModifiedDTO, Void> call(final TableColumn<ModifiedDTO, Void> param) {
-            final TableCell<ModifiedDTO, Void> cell = new TableCell<>() {
 
-                private final Button btn = new Button("READ");
-                {
-                    btn.setStyle(" -fx-background-color: transparent;-fx-text-fill: blue;-fx-font-weight: bold;");
-                }
-
-                {
-                    btn.setOnAction((ActionEvent event) -> {
-                        ModifiedDTO data = getTableView().getItems().get(getIndex());
-                        openModidiedView(data);
-                    });
-                }
-                {
-                    btn.setOnAction((ActionEvent event) -> {
-                        ModifiedDTO data = getTableView().getItems().get(getIndex());
-                        openModidiedView(data);
-                    });
-                }
-                @Override
-                public void updateItem(Void item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        setGraphic(btn);
+    public void createActionColumn(Consumer<ModifiedDTO> displayAction) {
+        TableColumn<ModifiedDTO, Void> actionCol = new TableColumn<>("Actions");
+        actionCol.setCellFactory(column -> new TableCell<>() {
+            private final Button btn = new Button("READ");
+            {
+                btn.setStyle("-fx-background-color: transparent; -fx-text-fill: blue; -fx-font-weight: bold;");
+                btn.setOnAction(event -> {
+                    ModifiedDTO data = getTableView().getItems().get(getIndex());
+                    if (data != null) {
+                        displayAction.accept(data);
                     }
-                }
-            };
-            return cell;
-        }
-    };
+                });
+            }
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+        requestTable.getColumns().add(actionCol);
+    }
 
-    private void openModidiedView(ModifiedDTO data) {
-        ModifiedView modifiedView = new ModifiedView();
-        modifiedView.display(data);
+    public void updateTable(List<ModifiedDTO> data) {
+        requestTable.setItems(FXCollections.observableArrayList(data));
     }
 
 }
