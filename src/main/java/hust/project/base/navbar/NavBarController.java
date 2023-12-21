@@ -3,9 +3,12 @@ package hust.project.base.navbar;
 import hust.project.base.constants.Route;
 import hust.project.base.dashboard.Dashboard;
 import hust.project.base.home.HomeController;
+import hust.project.base.modified.Model.AttendanceRecordDAO;
 import hust.project.base.modified.Model.ModifiedDAO;
 
 import hust.project.base.modified.Model.ModifiedRepository;
+import hust.project.base.summary_logs.Controller.SummaryDepartmentController;
+import hust.project.base.summary_logs.Model.*;
 import hust.project.base.summary_logs.View.SummaryDepartmentView;
 import hust.project.base.modified.View.PendingModifiedView;
 import hust.project.base.modified.Controller.PendingModifiedController;
@@ -38,9 +41,10 @@ public class NavBarController {
                         System.out.println("navigated to Dashboard!");
                         break;
                     case SUMMARY_DEPARTMENT_SCREEN:
-//                        SummaryRepository SummaryDAO = (SummaryRepository) new SummaryDAO();
-                        SummaryDepartmentView summaryDepartmentView = SummaryDepartmentView.instance(); // Use the instance method if it's a singleton
-//                        new SummaryDepartmentController(summaryDepartmentView, SummaryDAO);
+                        SummaryRepository summary = new SummaryService ();
+                        AttendanceRecordRepository attendanceRecord = new AttendanceRecordEntity ();
+                        SummaryDepartmentController summaryController = new SummaryDepartmentController(summary, attendanceRecord);
+                        SummaryDepartmentView summaryDepartmentView = new SummaryDepartmentView(summaryController);
                         HomeController.instance().changeScreen(summaryDepartmentView);
                         System.out.println("navigated to Summary Department!");
                         break;

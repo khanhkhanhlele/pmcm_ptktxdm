@@ -3,6 +3,8 @@ package hust.project.base.summary_logs.View;
 import hust.project.base.employee_subsystem.Employee;
 import hust.project.base.employee_subsystem.HRService;
 import hust.project.base.employee_subsystem.IHRService;
+import hust.project.base.summary_logs.Controller.SummaryDepartmentController;
+import hust.project.base.summary_logs.Controller.SummaryDepartmentController;
 import hust.project.base.summary_logs.Model.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -22,21 +24,18 @@ import java.util.List;
 import java.util.Map;
 
 import static hust.project.base.constants.MetricsConstants.MAIN_WIDTH;
+
 public class SummaryDepartmentView extends VBox {
     private TableView<Summary> summaryTable;
     private ComboBox<String> periodBox;
     private ComboBox<String> yearBox;
     private ComboBox<String> quarterBox;
     private HashMap<String, HashMap<String, Summary>> summaryMap;
-    private static SummaryDepartmentView ins;
-    public static SummaryDepartmentView instance(){
-        if(ins == null){
-            ins = new SummaryDepartmentView();
-        }
-        return ins;
-    }
+    private SummaryDepartmentController summaryController; // Controller
 
-    public SummaryDepartmentView() {
+
+    public SummaryDepartmentView(SummaryDepartmentController controller) {
+        this.summaryController = controller;
         setSpacing(20);
         setPrefWidth(MAIN_WIDTH * 0.5);
         setMaxWidth(MAIN_WIDTH * 0.8);
@@ -48,27 +47,25 @@ public class SummaryDepartmentView extends VBox {
         summaryMap = new HashMap<>();
         loadSummaryData();
         initComboBoxes();
+
         HBox selectionBox = createSelectionBox();
         getChildren().addAll(label, selectionBox, summaryTable);
-
     }
 
     private void loadSummaryData() {
         IHRService iHRService = new HRService();
         List<Employee> allEmployees = iHRService.getAllEmployee();
-        AttendanceRecordRepository attendanceRecordRepository = new AttendanceRecordEntity ();
 
         for (Employee employee : allEmployees) {
             String employeeId = employee.getEmployeeId();
-            List<AttendanceRecordRecord> attendanceRecords = attendanceRecordRepository.getAttendanceRecordByEmployeeId(employeeId);
 
             for (String period : getAllPeriods()) {
-                SummaryService summaryDAO = new SummaryService ();
-                int totalSessions = summaryDAO.calculateTotalSessions(attendanceRecords, period);
-                double totalLateHours = summaryDAO.calculateTotalLateHours(attendanceRecords, period);
-                double totalEarlyDepartures = summaryDAO.calculateTotalEarlyDepartures(attendanceRecords, period);
+                int totalSessions = summaryController.calculateTotalSessions(employeeId, period);
+                double totalLateHours = summaryController.calculateTotalLateHours(employeeId, period);
+                double totalEarlyDepartures = summaryController.calculateTotalEarlyDepartures(employeeId, period);
+
                 String departmentName = iHRService.getDepartment(employee.getDepartmentId()).getDepartmentName();
-                Summary summary = new Summary (employee.getName(), employeeId, departmentName, period, totalSessions, totalLateHours, totalEarlyDepartures);
+                Summary summary = new Summary(employee.getName(), employeeId, departmentName, period, totalSessions, totalLateHours, totalEarlyDepartures);
                 summaryMap.computeIfAbsent(employeeId, k -> new HashMap<>()).put(period, summary);
             }
         }
@@ -172,7 +169,7 @@ public class SummaryDepartmentView extends VBox {
         TableView<Summary> table = new TableView<>();
         TableColumn<Summary, Number> sttCol = new TableColumn<>("STT");
         sttCol.setMaxWidth(65);
-        sttCol.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(column.getValue()) + 1));
+        sttCol.setCellValueFactory(column -> new ReadOnlyObjectWrapper<> (table.getItems().indexOf(column.getValue()) + 1));
         sttCol.setSortable(false);
 
         TableColumn<Summary, String> nameColumn = new TableColumn<>("Tên nhân viên");
