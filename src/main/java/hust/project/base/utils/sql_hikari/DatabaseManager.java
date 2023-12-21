@@ -18,7 +18,7 @@ public class DatabaseManager {
     public void init() {
         String jdbcURL = "jdbc:mysql://localhost:3306/pmchamcong";
         String user = "root";
-        String password = "12345678";
+        String password = "123456";
         String database = "pmchamcong";
         HikariClient sqlClient = new HikariClient(jdbcURL, user, password, database);
         SQLJavaBridge bridge= new SQLJavaBridge(sqlClient);

@@ -1,18 +1,46 @@
 package hust.project.base.summary_logs.Model;
 
-import hust.project.base.employee_subsystem.Employee;
-
 public class Summary {
-    private int id;
-    private int departmentId;
-    private Employee employee;
-    private int year;
-    private int month;
-    private int quarter;
-    // Worker
-    private double totalShiftHours = 0;
-    // Officer
-    private double totalSessions = 0;
-    private double totalEarly = 0;
-    private double totalLate = 0;
+    private String employeeName;
+    private String employeeId;
+    private String departmentName;
+    private String period; // Tháng, quý, hoặc năm
+
+    private int totalSessions; // Tổng số buổi đi làm
+    private double totalLateHours; // Tổng số giờ đi muộn
+    private double totalEarlyDepartures; // Tổng số giờ về sớm
+
+
+    public Summary(String employeeName, String employeeId, String departmentName,
+                   String period, int totalSessions, double totalLateHours, double totalEarlyDepartures) {
+        this.employeeName = employeeName;
+        this.employeeId = employeeId;
+        this.departmentName = departmentName;
+        this.period = period;
+        this.totalSessions = totalSessions;
+        this.totalLateHours = totalLateHours;
+        this.totalEarlyDepartures = totalEarlyDepartures;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getDepartmentName() { return departmentName; }
+    public void setDepartmentName(String departmentName) { this.departmentName = departmentName; }
+    public String getEmployeeId() { return employeeId; }
+    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
+    public String getPeriod() { return period; }
+    public void setPeriod(String period) { this.period = period; }
+    public int getTotalSessions() { return totalSessions; }
+    public void setTotalSessions(int totalSessions) { this.totalSessions = totalSessions; }
+    public double getTotalLateHours() { return totalLateHours; }
+    public void setTotalLateHours(double totalLateHours) { this.totalLateHours = totalLateHours; }
+    public double getTotalEarlyDepartures() { return totalEarlyDepartures; }
+    public void setTotalEarlyDepartures(double totalEarlyDepartures) { this.totalEarlyDepartures = totalEarlyDepartures; }
+
 }

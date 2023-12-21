@@ -88,7 +88,7 @@ public class Navbar extends BorderPane {
         dashboardButton.setPrefHeight(APPLICATION_HEIGHT*0.1);
 
 
-        Button summaryLogs = new Button("  Báo cáo thống kê");
+        Button summaryLogs = new Button("  Chấm công nhân viên");
         ImageView summaryImage = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/Report.png"))));
         summaryImage.setFitHeight(20);
         summaryImage.setFitWidth(20);

@@ -1,6 +1,6 @@
 package hust.project.base.summary_logs.Model;
 
-public class AttendanceRecordDTO {
+public class AttendanceRecordRecord {
 
     private String recordId;
     private String employeeId;
@@ -8,7 +8,7 @@ public class AttendanceRecordDTO {
     private String date;
     private String time;
 
-    public AttendanceRecordDTO(String recordId, String employeeId, String fingerscannerId, String date, String time) {
+    public AttendanceRecordRecord(String recordId, String employeeId, String fingerscannerId, String date, String time) {
         this.recordId = recordId;
         this.employeeId = employeeId;
         this.fingerscannerId = fingerscannerId;
@@ -16,7 +16,7 @@ public class AttendanceRecordDTO {
         this.time = time;
     }
 
-    public AttendanceRecordDTO() {
+    public AttendanceRecordRecord() {
     }
     public String getRecordId() {
         return recordId;
