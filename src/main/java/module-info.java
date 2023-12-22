@@ -16,9 +16,10 @@ module hust.project.base {
     exports hust.project.base;
     exports hust.project.base.home;
     opens hust.project.base.home to javafx.fxml;
-    exports hust.project.base.dashboard;
-    opens hust.project.base.dashboard to javafx.fxml;
+    exports hust.project.base.InputCSV.inputCSVView;
+    opens hust.project.base.InputCSV.inputCSVView to javafx.fxml;
     exports hust.project.base.navbar;
+    opens hust.project.base.InputCSV.inputCSVModel to javafx.base;
     opens hust.project.base.navbar to javafx.fxml;
     exports hust.project.base.header;
     opens hust.project.base.header to javafx.fxml;
@@ -31,4 +32,8 @@ module hust.project.base {
     opens hust.project.base.summary_logs.Controller to javafx.fxml;
     exports hust.project.base.summary_logs.Model;
     opens hust.project.base.summary_logs.Model to javafx.fxml;
+//    exports hust.project.base.InputCSV.inputCSVView;
+//    opens hust.project.base.InputCSV.inputCSVView to javafx.fxml;
+    exports hust.project.base.InputCSV.inputCSVController;
+    opens hust.project.base.InputCSV.inputCSVController to javafx.fxml;
 }

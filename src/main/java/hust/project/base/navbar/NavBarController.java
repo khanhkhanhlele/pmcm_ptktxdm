@@ -1,9 +1,11 @@
 package hust.project.base.navbar;
 
+import hust.project.base.InputCSV.inputCSVController.InputCsvController;
+import hust.project.base.InputCSV.inputCSVModel.InputAttendanceRecordEntity;
+import hust.project.base.InputCSV.inputCSVModel.InputAttendanceRecordRepository;
 import hust.project.base.constants.Route;
-import hust.project.base.dashboard.Dashboard;
+import hust.project.base.InputCSV.inputCSVView.InputCsvView;
 import hust.project.base.home.HomeController;
-import hust.project.base.modified.Model.AttendanceRecordDAO;
 import hust.project.base.modified.Model.ModifiedDAO;
 
 import hust.project.base.modified.Model.ModifiedRepository;
@@ -37,7 +39,10 @@ public class NavBarController {
                         System.out.println("navigated to Home!");
                         break;
                     case DASHBOARD_SCREEN:
-                        HomeController.instance().changeScreen(Dashboard.instance());
+                        InputAttendanceRecordRepository inputRepository = new InputAttendanceRecordEntity ();
+                        InputCsvView view = new InputCsvView(inputRepository);
+                        InputCsvController controller = new InputCsvController (view, inputRepository);
+                        HomeController.instance().changeScreen(view); // Thay đổi màn hình
                         System.out.println("navigated to Dashboard!");
                         break;
                     case SUMMARY_DEPARTMENT_SCREEN:
