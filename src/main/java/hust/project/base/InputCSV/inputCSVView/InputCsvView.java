@@ -110,7 +110,7 @@ public class InputCsvView extends VBox {
                 String line = scanner.nextLine();
                 // Assuming CSV format: recordId,employeeId,fingerscannerId,date,time
                 String[] fields = line.split(",");
-                               AttendanceRecord record = new AttendanceRecord(fields[0], fields[1], fields[2], fields[3], fields[4]);
+                               AttendanceRecord record = new AttendanceRecord(fields[0],fields[1],fields[2], fields[3], fields[4]);
                 repository.insertAttendanceRecord(record);
             }
         } catch (Exception e) {
