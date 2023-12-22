@@ -3,6 +3,7 @@ package hust.project.base.InputCSV.inputCSVModel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import hust.project.base.InputCSV.inputCSVController.InvalidController;
 import hust.project.base.utils.sql_hikari.DatabaseManager;
 import hust.project.base.utils.sql_hikari.SQLJavaBridge;
 
@@ -38,7 +39,11 @@ public class InputAttendanceRecordEntity implements InputAttendanceRecordReposit
             String query = "INSERT INTO attendancerecords (record_id, employee_id, fingerscanner_id, date, time) VALUES (?, ?, ?, ?, ?)";
             bridge.update(query, attendanceRecordDTO.getRecordId(), attendanceRecordDTO.getEmployeeId(), attendanceRecordDTO.getFingerscannerId () , attendanceRecordDTO.getDate(), attendanceRecordDTO.getTime());
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("Duplicate entry")) {
+                System.out.println("Duplicate entry" + attendanceRecordDTO.getRecordId() + " in database");
+            }
+            String errorTitle = "Invalid #" + e.hashCode(); // or a more relevant error code
+            InvalidController.showError(errorTitle, e.getMessage());
         }
     }
 }

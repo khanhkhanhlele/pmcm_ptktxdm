@@ -1,5 +1,6 @@
 package hust.project.base.InputCSV.inputCSVView;
 
+import hust.project.base.InputCSV.inputCSVController.SuccessController;
 import hust.project.base.InputCSV.inputCSVModel.AttendanceRecord;
 import hust.project.base.InputCSV.inputCSVModel.InputAttendanceRecordRepository;
 import javafx.scene.control.Button;
@@ -99,6 +100,10 @@ public class InputCsvView extends VBox {
 
         if (selectedFile != null) {
             importCsvData(selectedFile);
+            SuccessController.showSuccess("Success", "Import file '" + selectedFile.getName() + "' thành công");
+        } else {
+
+            SuccessController.showSuccess("Import Cancelled", "No file was selected for import.");
         }
 
         System.out.println("Imported CSV data done!");
@@ -112,6 +117,7 @@ public class InputCsvView extends VBox {
                 String[] fields = line.split(",");
                                AttendanceRecord record = new AttendanceRecord(fields[0],fields[1],fields[2], fields[3], fields[4]);
                 repository.insertAttendanceRecord(record);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
