@@ -1,4 +1,6 @@
-package hust.project.base.summary_logs.Model;
+package hust.project.base.summary_logs.Controller;
+
+import hust.project.base.summary_logs.Model.AttendanceRecordRecord;
 
 import java.util.*;
 import java.time.LocalDate;
