@@ -20,6 +20,9 @@
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
   </component>
+  <component name="DBNavigator.Project.FileConnectionMappingManager">
+    <mapping file-url="file://$PROJECT_DIR$/sql/LNK.sql" connection-id="050d98e4-81e8-4539-8cd8-8eb3603af812" session-id="MAIN" current-schema="mysql" />
+  </component>
   <component name="DBNavigator.Project.ParserDiagnosticsManager">
     <diagnostics-history />
   </component>
