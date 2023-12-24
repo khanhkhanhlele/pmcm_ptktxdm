@@ -50,26 +50,10 @@ public class SummaryDepartmentView extends VBox {
 
         HBox selectionBox = createSelectionBox();
         getChildren().addAll(label, selectionBox, summaryTable);
+
     }
 
-    private void loadSummaryData() {
-        IHRService iHRService = new HRService();
-        List<Employee> allEmployees = iHRService.getAllEmployee();
 
-        for (Employee employee : allEmployees) {
-            String employeeId = employee.getEmployeeId();
-
-            for (String period : getAllPeriods()) {
-                int totalSessions = summaryController.calculateTotalSessions(employeeId, period);
-                double totalLateHours = summaryController.calculateTotalLateHours(employeeId, period);
-                double totalEarlyDepartures = summaryController.calculateTotalEarlyDepartures(employeeId, period);
-
-                String departmentName = iHRService.getDepartment(employee.getDepartmentId()).getDepartmentName();
-                Summary summary = new Summary(employee.getName(), employeeId, departmentName, period, totalSessions, totalLateHours, totalEarlyDepartures);
-                summaryMap.computeIfAbsent(employeeId, k -> new HashMap<>()).put(period, summary);
-            }
-        }
-    }
 
     private void updateTable(String period) {
         List<Summary> summariesForPeriod = new ArrayList<>();
@@ -80,89 +64,6 @@ public class SummaryDepartmentView extends VBox {
         }
         summaryTable.setItems(FXCollections.observableArrayList(summariesForPeriod));
     }
-    private void updateTableForYear(String year) {
-        List<Summary> summariesForYear = new ArrayList<>();
-
-        for (Map<String, Summary> employeeSummaries : summaryMap.values()) {
-            Summary yearlySummary = new Summary ("", "", "", "", 0, 0.0, 0.0);
-            int totalSessions = 0;
-            double totalLateHours = 0.0;
-            double totalEarlyDepartures = 0.0;
-
-            for (String period : employeeSummaries.keySet()) {
-                if (period.endsWith(year)) {
-                    Summary summary = employeeSummaries.get(period);
-                    totalSessions += summary.getTotalSessions();
-                    totalLateHours += summary.getTotalLateHours();
-                    totalEarlyDepartures += summary.getTotalEarlyDepartures();
-
-                    // Thiết lập thông tin nhân viên và phòng ban cho tổng hợp năm
-                    yearlySummary.setEmployeeName(summary.getEmployeeName());
-                    yearlySummary.setEmployeeId(summary.getEmployeeId());
-                    yearlySummary.setDepartmentName(summary.getDepartmentName());
-                }
-            }
-
-            yearlySummary.setPeriod("Năm " + year);
-            yearlySummary.setTotalSessions(totalSessions);
-            yearlySummary.setTotalLateHours(Math.round((totalLateHours) * 100.0) / 100.0);
-            yearlySummary.setTotalEarlyDepartures(Math.round((totalEarlyDepartures) * 100.0) / 100.0);
-
-
-            summariesForYear.add(yearlySummary);
-        }
-
-        summaryTable.setItems(FXCollections.observableArrayList(summariesForYear));
-    }
-
-    private void updateTableForQuarter(String quarter) {
-        List<Summary> summariesForQuarter = new ArrayList<>();
-
-        for (Map<String, Summary> employeeSummaries : summaryMap.values()) {
-            Summary quarterlySummary = new Summary ("","","","",0,0,0);
-            int totalSessions = 0;
-            double totalLateHours = 0.0;
-            double totalEarlyDepartures = 0.0;
-
-            for (String period : employeeSummaries.keySet()) {
-                if (isPeriodInQuarter(period, quarter)) {
-                    Summary summary = employeeSummaries.get(period);
-                    totalSessions += summary.getTotalSessions();
-                    totalLateHours += summary.getTotalLateHours();
-                    totalEarlyDepartures += summary.getTotalEarlyDepartures();
-
-                    // Thiết lập thông tin nhân viên và phòng ban cho tổng hợp quý
-                    quarterlySummary.setEmployeeName(summary.getEmployeeName());
-                    quarterlySummary.setEmployeeId(summary.getEmployeeId());
-                    quarterlySummary.setDepartmentName(summary.getDepartmentName());
-                }
-            }
-
-            quarterlySummary.setPeriod(quarter);
-            quarterlySummary.setTotalSessions(totalSessions);
-            quarterlySummary.setTotalLateHours(Math.round((totalLateHours) * 100.0) / 100.0);
-            quarterlySummary.setTotalEarlyDepartures(Math.round((totalEarlyDepartures) * 100.0) / 100.0);
-            summariesForQuarter.add(quarterlySummary);
-        }
-
-        summaryTable.setItems(FXCollections.observableArrayList(summariesForQuarter));
-    }
-
-    private boolean isPeriodInQuarter(String period, String quarter) {
-        String[] periodParts = period.split("-");
-        int periodMonth = Integer.parseInt(periodParts[0]);
-        int periodYear = Integer.parseInt(periodParts[1]);
-
-        String[] quarterParts = quarter.split(" - ");
-        String quarterYear = quarterParts[1];
-        int quarterNumber = Integer.parseInt(quarterParts[0].split(" ")[1]);
-
-        int quarterStartMonth = (quarterNumber - 1) * 3 + 1; // Tháng bắt đầu của quý
-        int quarterEndMonth = quarterStartMonth + 2; // Tháng kết thúc của quý
-
-        return periodYear == Integer.parseInt(quarterYear) && periodMonth >= quarterStartMonth && periodMonth <= quarterEndMonth;
-    }
-
 
 
     private TableView<Summary> createSummaryTable() {
@@ -207,22 +108,12 @@ public class SummaryDepartmentView extends VBox {
         return table;
     }
 
-    private String[] getAllPeriods() {
-        AttendanceRecordRepository attendanceRecordRepository = new AttendanceRecordEntity ();
-        LocalDate startDate = attendanceRecordRepository.getStartDateFromDB();
-        LocalDate endDate = LocalDate.now(); // Hoặc ngày muộn nhất có thể từ DB
-        ArrayList<String> periods = new ArrayList<>();
-
-        while (startDate.isBefore(endDate) || startDate.isEqual(endDate)) {
-            String period = startDate.format(DateTimeFormatter.ofPattern("MM-yyyy"));
-            periods.add(period);
-            startDate = startDate.plusMonths(1);
-        }
-        return periods.toArray(new String[0]);
-    }
-
     private void initComboBoxes() {
-        periodBox = new ComboBox<>(FXCollections.observableArrayList(getAllPeriods()));
+        periodBox = new ComboBox<>(FXCollections.observableArrayList(summaryController.getAllPeriods ()));
+//        String currentPeriod = getCurrentPeriod();
+//        periodBox.setValue(currentPeriod);
+//        updateTable(currentPeriod);
+
         periodBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 updateTable(newSelection);
@@ -248,6 +139,8 @@ public class SummaryDepartmentView extends VBox {
                 yearBox.setValue(null);
             }
         });
+
+
     }
 
     private HBox createSelectionBox() {
@@ -260,7 +153,23 @@ public class SummaryDepartmentView extends VBox {
         return selectionBox;
     }
 
+    private void loadSummaryData() {
+        summaryMap = summaryController.loadSummaryData(); // Fetch data from controller
+    }
 
+    private void updateTableForYear(String year) {
+        List<Summary> summariesForYear = summaryController.updateTableForYear(year);
+        summaryTable.setItems(FXCollections.observableArrayList(summariesForYear));
+    }
 
+    private void updateTableForQuarter(String quarter) {
+        List<Summary> summariesForQuarter = summaryController.updateTableForQuarter(quarter);
+        summaryTable.setItems(FXCollections.observableArrayList(summariesForQuarter));
+    }
+
+    private String getCurrentPeriod() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        return LocalDate.now().format(formatter);
+    }
 
 }

@@ -2,12 +2,15 @@ package hust.project.base.navbar;
 
 import hust.project.base.constants.Route;
 import hust.project.base.dashboard.Dashboard;
+import hust.project.base.employee_subsystem.HRService;
+import hust.project.base.employee_subsystem.IHRService;
 import hust.project.base.home.HomeController;
-import hust.project.base.modified.Model.AttendanceRecordDAO;
 import hust.project.base.modified.Model.ModifiedDAO;
 
 import hust.project.base.modified.Model.ModifiedRepository;
 import hust.project.base.summary_logs.Controller.SummaryDepartmentController;
+import hust.project.base.summary_logs.Controller.SummaryRepository;
+import hust.project.base.summary_logs.Controller.SummaryService;
 import hust.project.base.summary_logs.Model.*;
 import hust.project.base.summary_logs.View.SummaryDepartmentView;
 import hust.project.base.modified.View.PendingModifiedView;
@@ -41,13 +44,16 @@ public class NavBarController {
                         System.out.println("navigated to Dashboard!");
                         break;
                     case SUMMARY_DEPARTMENT_SCREEN:
-                        SummaryRepository summary = new SummaryService ();
-                        AttendanceRecordRepository attendanceRecord = new AttendanceRecordEntity ();
+                        IHRService iHRService = new HRService ();
+                        AttendanceRecordRepository attendanceRecord = new AttendanceRecordEntity();
+                        SummaryRepository summary = new SummaryService(iHRService, attendanceRecord);
                         SummaryDepartmentController summaryController = new SummaryDepartmentController(summary, attendanceRecord);
                         SummaryDepartmentView summaryDepartmentView = new SummaryDepartmentView(summaryController);
+
                         HomeController.instance().changeScreen(summaryDepartmentView);
                         System.out.println("navigated to Summary Department!");
                         break;
+
                     case DETAIL_SCREEN:
                         //TODO: navigate to detail screen
                         System.out.println("navigated to Detail!");
