@@ -1,11 +1,11 @@
---Chuyển db thành unsafe để delete dữ liệu table
+-- Chuyển db thành unsafe để delete dữ liệu table
 SET SQL_SAFE_UPDATES = 0;
---Chuyển dn thành safe
+-- Chuyển dn thành safe
 SET SQL_SAFE_UPDATES = 1;
---Xóa hết hàng trong bảng
+-- Xóa hết hàng trong bảng
 TRUNCATE TABLE pmchamcong.attendancerecords;
---Inset dữ liệu vào bảng (không chạy lệnh insert attendancerecords trong sql của t)
---Dat ten schema la pmchamcong
+-- Inset dữ liệu vào bảng (không chạy lệnh insert attendancerecords trong sql của t)
+-- Dat ten schema la pmchamcong
 CREATE TABLE pmchamcong.departments (
     department_id CHAR(10) PRIMARY KEY,
     department_name VARCHAR(255)
@@ -32,7 +32,7 @@ INSERT INTO pmchamcong.employees (employee_id, name, department_id, employee_typ
 ('EMP003', 'Le Van C', 'DEPT003', 'NHANVIEN'),
 ('EMP005', 'Hoang Van E', 'DEPT005', 'NHANVIEN'),
 ('EMP007', 'Dang Van G', 'DEPT007', 'NHANVIEN'),
-('EMP009', 'Dao Van I', 'DEPT009', 'NHANVIEN')
+('EMP009', 'Dao Van I', 'DEPT009', 'NHANVIEN');
 
 INSERT INTO pmchamcong.departments (department_id, department_name) VALUES
 ('DEPT001', 'Vận Hành Nhà Máy'),
@@ -246,7 +246,7 @@ INSERT INTO pmchamcong.attendancerecords (record_id, employee_id, fingerscanner_
 ('RECORD197', 'EMP003', 'SCAN0001', '01-07-2022', '08:07:00'),
 ('RECORD198', 'EMP003', 'SCAN0001', '01-07-2022', '12:52:00'),
 ('RECORD199', 'EMP003', 'SCAN0001', '01-07-2022', '13:08:00'),
-('RECORD200', 'EMP003', 'SCAN0001', '01-07-2022', '18:06:00')
+('RECORD200', 'EMP003', 'SCAN0001', '01-07-2022', '18:06:00');
 INSERT INTO pmchamcong.attendancerecords (record_id, employee_id, fingerscanner_id, date, time) VALUES
 ('RECORD201', 'EMP001', 'SCAN0001', '24-08-2023', '08:15:00'),
 ('RECORD202', 'EMP001', 'SCAN0001', '24-08-2023', '12:40:00'),
@@ -447,4 +447,4 @@ INSERT INTO pmchamcong.attendancerecords (record_id, employee_id, fingerscanner_
 ('RECORD397', 'EMP003', 'SCAN0001', '15-06-2023', '08:07:00'),
 ('RECORD398', 'EMP003', 'SCAN0001', '15-06-2023', '12:48:00'),
 ('RECORD399', 'EMP003', 'SCAN0001', '15-06-2023', '13:14:00'),
-('RECORD400', 'EMP003', 'SCAN0001', '15-06-2023', '17:01:00')
+('RECORD400', 'EMP003', 'SCAN0001', '15-06-2023', '17:01:00');
