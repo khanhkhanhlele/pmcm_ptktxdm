@@ -16,8 +16,6 @@ public class AttendanceRecordRecord {
         this.time = time;
     }
 
-    public AttendanceRecordRecord() {
-    }
     public String getRecordId() {
         return recordId;
     }

@@ -50,7 +50,7 @@ public class SummaryDepartmentView extends VBox {
 
         HBox selectionBox = createSelectionBox();
         getChildren().addAll(label, selectionBox, summaryTable);
-
+        this.updateTable(this.getCurrentPeriod());
     }
 
 
@@ -116,6 +116,7 @@ public class SummaryDepartmentView extends VBox {
 
         periodBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
+                System.out.println(newSelection);
                 updateTable(newSelection);
                 yearBox.setValue(null);
                 quarterBox.setValue(null);
@@ -168,7 +169,7 @@ public class SummaryDepartmentView extends VBox {
     }
 
     private String getCurrentPeriod() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
         return LocalDate.now().format(formatter);
     }
 

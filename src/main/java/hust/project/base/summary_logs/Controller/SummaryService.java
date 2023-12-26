@@ -98,19 +98,13 @@ public class SummaryService implements SummaryRepository {
                     // Đi muộn buổi sáng
                     Duration duration = Duration.between(morningStartTime, recordTime);
                     totalLateMinutes += duration.toMinutes();
-//                    System.out.println(recordTime.toString() );
-//                    System.out.println("Di muon sang ngay "+ recordDate.toString() +" thoi gian "+duration.toMinutes());
                 } else if (recordTime.isAfter(afternoonStartTime)&& recordTime.isBefore(maxAfternoonLateTime)) {
                     // Đi muộn buổi chiều
                     Duration duration = Duration.between(afternoonStartTime, recordTime);
                     totalLateMinutes += duration.toMinutes();
-//                    System.out.println(recordTime.toString());
-//                    System.out.println(recordTime.toString());
-//                    System.out.println("Di muon chieu ngay "+ recordDate.toString() +" thoi gian "+ duration.toMinutes());
                 }
             }
         }
-
         return Math.round((totalLateMinutes / 60) * 100.0) / 100.0;
     }
 
