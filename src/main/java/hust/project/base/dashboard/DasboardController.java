@@ -1,4 +1,6 @@
-package hust.project.base.dashboard;
+package hust.project.base.dashboard.Controller;
+
+import hust.project.base.dashboard.View.Dashboard;
 
 public class DasboardController {
     private final Dashboard dasboard = Dashboard.instance();
